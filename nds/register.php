@@ -1,0 +1,92 @@
+<?php
+require("connect.php");
+require("index.php");
+if (!empty($_POST)){
+    $result = mysqli_query($connect, "SELECT * FROM users WHERE login='$_POST[login]'");
+    //$pass = md5($_POST['password']);
+    $pass = $_POST['password'];
+    $login = $_POST['login'];
+    $name = $_POST['name'];
+    if(mysqli_num_rows($result) == 0){
+        $sql = "INSERT INTO `users` (`Name`, `login`, `password`) VALUES (
+            '$name', 
+            '$login',
+            '$pass'
+            )";
+        mysqli_query($connect, $sql);
+        
+    }
+    header("Location: auth.php");
+}
+$content = "";
+$content.= "
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Oswald:wght@200&display=swap' rel='stylesheet'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <link rel='stylesheet' href='style.css'>
+    <title>Регистрация</title>
+</head>
+<body>
+<header>
+ <img src = 'pics/logo.svg' alt='наш логотип'>
+</header>
+<main>
+<div class='formstyle'>
+    <form method='POST'>
+        <div class='labels'>
+            Регистрация
+        </div>
+        <div class='frame'>
+            <div class='fram3'>
+                <label>ФИО</label>
+                <input class='inputforms' type='text' name='name'>
+            </div>
+            <div class='fram4'>
+                <label>Логин</label>
+                <input class='inputforms' type='text' name='login'>
+            </div>
+            <div class='fram45'>
+                <div class='fram5'>
+                    <label>Пароль</label>
+                    <input class='inputforms' type='password' name='password'>
+                </div>
+                <div class='butons'>
+                    <button type='submit'>Зарегистрироваться</button>
+                    <div class = 'text'> Уже есть аккаунт?</div > <a class = 'linked' href = 'auth.php'>Войти</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<footer id='footer1'>
+        <div class='frame46624'>
+            <div class='frame1419'>
+                <div class='parking777'>Парковка777</div>
+                <a id='link1' href='https://data.mos.ru/opendata/7704786030-platnye-parkovki-zakrytogo-tipa?pageNumber=1&versionNumber=4&releaseNumber=30'>Платные парковки закрытого типа</a>
+                <a id='link2' href='https://data.mos.ru/opendata/7704786030-platnye-parkovki-na-ulichno-dorojnoy-seti'>Платные парковки на улично-дорожной сети</a>
+            </div>
+
+        </div>
+        <hr>
+        <div class='frame46625'>
+            <div class='maxim'>
+                2023 Maxim Syrov
+            </div>
+            <div class='frame1438'>
+                <a href='https://t.me/moximmilian'><img id='#telegram' src='pics/Telegram.svg'></a>
+                <a href='https://vk.com/moximillian'><img id=' #vk' src='pics/vk.svg'></a>
+            </div>
+
+        </div>
+    </footer>
+</main>
+</body>
+</html>
+";
+echo $content;
