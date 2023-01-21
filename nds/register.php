@@ -81,6 +81,7 @@ $content.= "
             <div class='frame1438'>
                 <a href='https://t.me/moximmilian'><img id='#telegram' src='pics/Telegram.svg'></a>
                 <a href='https://vk.com/moximillian'><img id=' #vk' src='pics/vk.svg'></a>
+                <a href='https://github.com/moximilian/parking_slots_2023'><img id=' #git' src='pics/Git-logo.svg'></a>
             </div>
 
         </div>
