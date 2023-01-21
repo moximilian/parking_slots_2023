@@ -1447,6 +1447,21 @@ hr {
     order: 1;
     flex-grow: 0;
 }
+#git {
+
+    width: 16.84px;
+    height: 10px;
+
+    /* Text / Secondary */
+
+    background: #6D859E;
+
+    /* Inside auto layout */
+
+    flex: none;
+    order: 2;
+    flex-grow: 0;
+}
 
 .showplace {
     /* Button */
