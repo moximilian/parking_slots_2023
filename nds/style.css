@@ -222,7 +222,7 @@ input {
     align-items: center;
     padding: 17px;
     gap: 7px;
-    width: 323px;
+    width: 350px;
     height: 54px;
 
     background: #FFFFFF;
@@ -242,7 +242,7 @@ input {
 button {
     /* Button */
 
-    width: 156px;
+    width: 170px;
     height: 24px;
 
     font-family: 'Roboto', sans-serif;
@@ -471,7 +471,7 @@ button:focus {
     padding: 0px;
     gap: 8px;
 
-    width: 193px;
+    width: 200px;
     height: 24px;
 
 
@@ -1509,10 +1509,6 @@ hr {
 .place {
     width: 24px;
     height: 24px;
-
-
-    /* Inside auto layout */
-
     flex: none;
     order: 0;
     flex-grow: 0;
