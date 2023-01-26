@@ -1,9 +1,8 @@
 <?php
 require("connect.php");
-require("index.php");
+$sql = "";
 if (!empty($_POST)){
     $result = mysqli_query($connect, "SELECT * FROM users WHERE login='$_POST[login]'");
-    //$pass = md5($_POST['password']);
     $pass = $_POST['password'];
     $login = $_POST['login'];
     $name = $_POST['name'];
@@ -48,7 +47,7 @@ $content.= "
                 <input class='inputforms' type='text' name='name'>
             </div>
             <div class='fram4'>
-                <label>Логин</label>
+                <label>Почта (логин)</label>
                 <input class='inputforms' type='text' name='login'>
             </div>
             <div class='fram45'>
