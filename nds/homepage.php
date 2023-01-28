@@ -14,7 +14,7 @@ if (isset($_POST['myratio'])) {
 }
 /* когда срабатывает ссылка занять место парковочное, передается айди парковки из датасета с клиента*/
 if (isset($_GET['id'])) {
-    $sql1 = "SELECT `FreeSpaces`,`CountSpaces` FROM `$_GET[type]` WHERE`ID` = $_GET[id]";
+    $sql1 = "SELECT `FreeSpaces`,`CountSpaces` FROM `$_GET[type]space` WHERE`ID` = $_GET[id]";
     $sqlQuir = mysqli_query($connect, $sql1);
     $result = mysqli_fetch_assoc($sqlQuir);
     /* получается количество свободных и занятых мест с парковки */
@@ -35,7 +35,7 @@ if (isset($_GET['id'])) {
             }
         }
         // в базе данных парковке увеличивается место на одно
-        $sql1 = "UPDATE `$_GET[type]`SET `FreeSpaces` = $freespaces WHERE `ID` = $_GET[id]";
+        $sql1 = "UPDATE `$_GET[type]space`SET `FreeSpaces` = $freespaces WHERE `ID` = $_GET[id]";
         mysqli_query($connect, $sql1);
     }
     if ($_GET['action'] == 'delete') {
@@ -52,7 +52,7 @@ if (isset($_GET['id'])) {
             }
         }
         // в базе данных парковке уменьшается место на одно
-        $sql1 = "UPDATE `$_GET[type]`SET `FreeSpaces` = $freespaces WHERE `ID` = $_GET[id]";
+        $sql1 = "UPDATE `$_GET[type]space`SET `FreeSpaces` = $freespaces WHERE `ID` = $_GET[id]";
         mysqli_query($connect, $sql1);
     }
     $type = $_GET['type'];
@@ -138,9 +138,13 @@ while ($row = mysqli_fetch_array($result)) {
     $coords[] = $row['Coordinates'];
     array_push($address, $row['Address']);
     $countAll[] = $row['CountSpaces'];
-    $countFree[] = $row['FreeSpaces'];
     $names[] = $row['Name'];
     $ids[] = $row['ID'];
+}
+$sql3 = "SELECT `FreeSpaces` FROM `$GLOBALS[type]space`";
+$resulttt = mysqli_query($connect, $sql3);
+while ($row = mysqli_fetch_array($resulttt)) {
+    $countFree[] = $row['FreeSpaces'];
 }
 //если пользователь авторизирован будет запущен процесс нахождения его занятой парковки для 
 //отображения её на карте красным цветом
@@ -190,8 +194,8 @@ if (!empty($session_user)) {
         function init() {
             // Создание карты.
             var geolocation = ymaps.geolocation,
-            coordination = [55.818837, 37.664653],
-            coords = [geolocation.latitude, geolocation.longitude]
+                coordination = [55.818837, 37.664653],
+                coords = [geolocation.latitude, geolocation.longitude]
             var myMap = new ymaps.Map("map", {
                 // Координаты центра карты.
                 // Порядок по умолчанию: «широта, долгота».
@@ -250,14 +254,25 @@ if (!empty($session_user)) {
                     } else return '';
                 },
                 //в балун каждой парковки выводитя информация об этой парковки из бд, а так же две ссылки на добовление или удаление занятого места
-                getPointData = function(index) {
+                getPointData = function(index, condition, length) {
                     document.cookie = "index = " + index;
-                    return {
-                        balloonContentBody: '<h1>' + names[index] + '</h1><br>Адресс: <strong>' + address[index] +
-                            '</strong><br> <h3>Свободно <strong>' + (countAll[index] - countFree[index]) +
-                            '/' + countAll[index] + '</h3></strong><br>' + getInfo(ids[index], id_parking_red) + '<a href="homepage.php?id=' + (ids[index] ) + '&action=add&type=<?php echo $GLOBALS['type'] ?>"> Занять место </a><br><a href="homepage.php?id=' + (ids[index] ) + '&action=delete&type=<?php echo $GLOBALS['type'] ?>"> Освободить место </a>',
-                        clusterCaption: '<strong>' + names[index] + '</strong>'
-                    };
+                    if (condition == true) {
+                        return {
+                            balloonContentBody: '<h1>' + names[index] + '</h1><br>Адресс: <strong>' + address[index] +
+                                '</strong><br> <h3>Свободно <strong>' + (countAll[index] - countFree[index])
+                                 +
+                                '/' + countAll[index] + '</h3></strong><br>' + getInfo(ids[index], id_parking_red) + '<a href="homepage.php?id=' + (ids[index]) + '&action=add&type=<?php echo $GLOBALS['type'] ?>"> Занять место </a><br><a href="homepage.php?id=' + (ids[index]) + '&action=delete&type=<?php echo $GLOBALS['type'] ?>"> Освободить место </a>',
+                            clusterCaption: '<strong>' + names[index] + '</strong>'
+                        };
+                    }else{
+                        return {
+                            balloonContentBody: '<h1>' + names[index] + '</h1><br>Адресс: <strong>' + address[index] + 
+                                '</strong><br> <h3>Свободно <strong>' + (countAll[index] - countFree[parseInt(ids[index])-1])
+                                 +
+                                '/' + countAll[index] + '</h3></strong><br>' + getInfo(ids[index], id_parking_red) + '<a href="homepage.php?id=' + (ids[index]) + '&action=add&type=<?php echo $GLOBALS['type'] ?>"> Занять место </a><br><a href="homepage.php?id=' + (ids[index]) + '&action=delete&type=<?php echo $GLOBALS['type'] ?>"> Освободить место </a>',
+                            clusterCaption: '<strong>' + names[index] + '</strong>'
+                        };
+                    }
                 },
                 // при отрисовке в случае если какая-то парковка является той парковкой, занятой пользователем - её цвет обращается в красный
                 getcolor = function(id_red, id_user) {
@@ -276,8 +291,12 @@ if (!empty($session_user)) {
                 },
                 points = pointsL,
                 geoObjects = [];
+            var condition = true;
+            if (countFree.length != pointsL.length) {
+                var condition = false;
+            }
             for (var i = 0, len = pointsL.length; i < len; i++) {
-                geoObjects[i] = new ymaps.Placemark(pointsL[i], getPointData(i), getPointOptions(ids[i]));
+                geoObjects[i] = new ymaps.Placemark(pointsL[i], getPointData(i, condition, pointsL.length), getPointOptions(ids[i]));
 
             }
             // кластеризация множетсва точек на карте
@@ -400,9 +419,9 @@ if (!empty($session_user)) {
         <?php if (!empty($session_user)) echo '<div id="map"></div>' ?>
     </main>
     <footer <?php if ($showplace != "")
-            echo 'id="footer2"';
-        else
-            echo 'id="footer1"';  ?>>
+                echo 'id="footer2"';
+            else
+                echo 'id="footer1"';  ?>>
         <div class='frame46624'>
             <div class='frame1419'>
                 <div class='parking777'>Парковка777</div>
@@ -425,4 +444,5 @@ if (!empty($session_user)) {
         </div>
     </footer>
 </body>
+
 </html>
