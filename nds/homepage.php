@@ -67,8 +67,6 @@ if (isset($_POST['submit']) && isset($_POST['district'])) {
 
     FilterByDistrict($dis);
 }
-
-
 //применяется запрос по содержанию ячейки информации из инпута
 function FilterByDistrict($district)
 {
@@ -191,8 +189,9 @@ if (!empty($session_user)) {
 
         function init() {
             // Создание карты.
-            var geolocation = ymaps.geolocation;
-            coordination = [55.818837, 37.664653];
+            var geolocation = ymaps.geolocation,
+            coordination = [55.818837, 37.664653],
+            coords = [geolocation.latitude, geolocation.longitude]
             var myMap = new ymaps.Map("map", {
                 // Координаты центра карты.
                 // Порядок по умолчанию: «широта, долгота».
@@ -278,7 +277,6 @@ if (!empty($session_user)) {
                 points = pointsL,
                 geoObjects = [];
             for (var i = 0, len = pointsL.length; i < len; i++) {
-
                 geoObjects[i] = new ymaps.Placemark(pointsL[i], getPointData(i), getPointOptions(ids[i]));
 
             }
@@ -342,7 +340,6 @@ if (!empty($session_user)) {
                     }
                 }
             });
-
             myMap.geoObjects.add(clusterer);
         }
     </script>
@@ -400,7 +397,7 @@ if (!empty($session_user)) {
                 <input id='buttonfind' type="submit" name="submit" value="Показать парковочные места"></input>
             </form>
         </div>
-        <div id="map"></div>
+        <?php if (!empty($session_user)) echo '<div id="map"></div>' ?>
     </main>
     <footer <?php if ($showplace != "")
             echo 'id="footer2"';
